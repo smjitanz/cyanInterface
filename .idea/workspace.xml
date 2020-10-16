@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="66091113-51e2-4c7b-8c33-300a67a63aa2" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="importAutomatically" value="true" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="1hBEym43gzOTvvF3DJFd1bCZ48r" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.cyanParser.model" />
+    </key>
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.cyanParser.model" />
+    </key>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="66091113-51e2-4c7b-8c33-300a67a63aa2" name="Default Changelist" comment="" />
+      <created>1599476341359</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1599476341359</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="488" y="79" key="#com.intellij.ide.util.MemberChooser" timestamp="1600123928991">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="488" y="79" key="#com.intellij.ide.util.MemberChooser/0.0.1366.728@0.0.1366.728" timestamp="1600123928991" />
+    <state x="413" y="110" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1600123849455">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="413" y="110" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1366.728@0.0.1366.728" timestamp="1600123849455" />
+    <state x="303" y="0" key="CommitChangelistDialog2" timestamp="1602832100309">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="303" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1602832100309" />
+    <state x="463" y="105" key="FileChooserDialogImpl" timestamp="1602832021534">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="463" y="105" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1602832021534" />
+    <state x="517" y="279" width="356" height="169" key="Github.CreateGistDialog" timestamp="1602831963044">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="517" y="279" width="356" height="169" key="Github.CreateGistDialog/0.0.1366.728@0.0.1366.728" timestamp="1602831963044" />
+    <state x="531" y="257" key="Github.ShareDialog" timestamp="1602832005946">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="531" y="257" key="Github.ShareDialog/0.0.1366.728@0.0.1366.728" timestamp="1602832005946" />
+    <state x="162" y="111" key="caller.chooser.dialog" timestamp="1600123867256">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="162" y="111" key="caller.chooser.dialog/0.0.1366.728@0.0.1366.728" timestamp="1600123867256" />
+    <state x="379" y="187" key="com.intellij.ide.util.TipDialog" timestamp="1602825580813">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="379" y="187" key="com.intellij.ide.util.TipDialog/0.0.1366.728@0.0.1366.728" timestamp="1602825580813" />
+    <state x="339" y="162" key="run.anything.popup" timestamp="1599556761856">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="339" y="162" key="run.anything.popup/0.0.1366.728@0.0.1366.728" timestamp="1599556761856" />
+  </component>
+</project>
