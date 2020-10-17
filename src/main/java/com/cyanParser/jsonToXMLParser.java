@@ -13,16 +13,16 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class jsonToXMLParser {
 
 
     List<String> uomList =  Arrays.asList("W","varh","var","Wh");
+    List<String> profileObisList = Arrays.asList("1.0.99.3.0.255","1.0.99.1.0.255");
+    List<String> subtractiveRegisterObisList = Arrays.asList("1.0.1.8.0.255","1.0.2.8.0.255");
+
     String[] formatedValues=null;
     public jsonToXMLParser() {
     }
@@ -40,7 +40,7 @@ public class jsonToXMLParser {
             return e.getMessage();
         }
 
-     }
+    }
 
     public String GetEventsCount(@org.jetbrains.annotations.NotNull StringBuffer jsonBody)
     {
@@ -187,32 +187,32 @@ public class jsonToXMLParser {
     //code for parsing events json
     public void parseEventsJson(@org.jetbrains.annotations.NotNull StringBuffer jsonBody, StringBuilder fileName, Environment env) {
         try {
-        Gson gson = new Gson(); // Or use new GsonBuilder().create();
-        ListEvent target2 = gson.fromJson(jsonBody.toString(), ListEvent.class);
+            Gson gson = new Gson(); // Or use new GsonBuilder().create();
+            ListEvent target2 = gson.fromJson(jsonBody.toString(), ListEvent.class);
 
-        SGGIMDsEvents events = new SGGIMDsEvents();
-        DeviceEventSeeder deviceEvent;
-        String externalSourceIdentifier=null;
-        LocalDateTime date;
-        externalSourceIdentifier = fileName.replace(fileName.length() - 4, fileName.length(), "xml").toString();
+            SGGIMDsEvents events = new SGGIMDsEvents();
+            DeviceEventSeeder deviceEvent;
+            String externalSourceIdentifier=null;
+            LocalDateTime date;
+            externalSourceIdentifier = fileName.replace(fileName.length() - 4, fileName.length(), "xml").toString();
 
             for(Event event : target2.events)
-        {
-            //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
-            //DateTimeFormatter stringFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss");
+            {
+                //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
+                //DateTimeFormatter stringFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss");
 
-            //date = LocalDateTime.parse(event.getEventTime(), formatter);
+                //date = LocalDateTime.parse(event.getEventTime(), formatter);
 
-            deviceEvent = new DeviceEventSeeder();
+                deviceEvent = new DeviceEventSeeder();
 
-            deviceEvent.setDeviceIdentifierNumber(event.getMeterId());
-            deviceEvent.setEventDateTime(event.getEventTime());
-            deviceEvent.setExternalEventName(event.getType());
-            deviceEvent.setExternalSenderId(env.getProperty("hes.name"));
-            deviceEvent.setExternalSourceIdentifier(externalSourceIdentifier.replace(env.getProperty("file.path"),"").toString());
+                deviceEvent.setDeviceIdentifierNumber(event.getMeterId());
+                deviceEvent.setEventDateTime(event.getEventTime());
+                deviceEvent.setExternalEventName(event.getType());
+                deviceEvent.setExternalSenderId(env.getProperty("hes.name"));
+                deviceEvent.setExternalSourceIdentifier(externalSourceIdentifier.replace(env.getProperty("file.path"),"").toString());
 
-            events.getEvents().add(deviceEvent);
-        }
+                events.getEvents().add(deviceEvent);
+            }
             JAXBContext context = JAXBContext.newInstance(SGGIMDsEvents.class, DeviceEventSeeder.class);
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -249,7 +249,7 @@ public class jsonToXMLParser {
 
                 //DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;//DateTimeFormatter.ofPattern(DateTimeFormatter.ISO_OFFSET_DATE_TIME, Locale.ENGLISH);
                 //DateTimeFormatter stringFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss");
-                 for (String alarm: event.getAlarmActive()){
+                for (String alarm: event.getAlarmActive()){
                     //date = LocalDateTime.parse(event.getAlarmTime(), formatter);
                     //System.out.println(event.getAlarmTime());
                     //System.out.println(date);
@@ -289,119 +289,67 @@ public class jsonToXMLParser {
         try {
             Gson gson = new Gson(); // Or use new GsonBuilder().create();
             ListUsage target2 = gson.fromJson(jsonBody.toString(), ListUsage.class);
+            Collections.sort(target2.usages, Usage.sampleDateTime);
+            subtractiveRegisterObisList = Arrays.asList(env.getProperty("hes.subtractiveRegisterObisList").split(","));
+            profileObisList = Arrays.asList(env.getProperty("hes.profileObisList").split(","));
+            uomList = Arrays.asList(env.getProperty("hes.uomList").split(","));
+
             SGGIMDsEvents imds = new SGGIMDsEvents();
             D1InitialLoadIMD DIMD;
             preVEE PVSeeder;
-            //new Work
-            Devices devices = new Devices();
-            Device device;
             mL ml;
             preVEE preVee;
 
-            LocalDateTime startDate = null;
-            LocalDateTime endDate = null;
-            int count;// = 1;
-
-            ArrayList<String> devicesIds = new ArrayList<>();
-
-            //System.out.println(target2.usages);
-
-            for (Usage usage : target2.usages) {
-                ///*new*/DIMD=null;PVSeeder=null;
-                ///*new*/PVSeeder= new preVEE();
-               ///*new*/DIMD= new D1InitialLoadIMD(PVSeeder);
-                if (devicesIds.contains(usage.getDeviceId()))
-                    continue;
-
-                device = new Device();
-
-                //device.setHeadEnd(env.getProperty("hes.name"));PVSeeder.setServiceProviderExternalId(env.getProperty("hes.name"));
-                device.setHeadEndExternalId(env.getProperty("hes.externalid"));
-                ///*new*/PVSeeder.setServiceProviderExternalId(env.getProperty("hes.externalid"));
-                device.setDeviceIdentifierNumber(usage.getDeviceId());
-                ///*new*/PVSeeder.setDvcIdN(usage.getDeviceId());
-
-                List<Usage> sameDevices = target2.usages.stream().filter(i -> i.getDeviceId().equals(usage.getDeviceId())).collect(Collectors.toList());
-                startDate=null;
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;//DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
+            target2.usages.removeIf(x-> !(profileObisList.contains(x.getFormattedProfileObisCode())));
+            List<String> devices= target2.usages.stream().map(x->x.getDeviceId()).collect(Collectors.toList());
+            for(Usage usage : target2.usages)
+            {
+                LocalDateTime startDate = LocalDateTime.parse( usage.getSampleTime(), formatter);
+                startDate=  startDate.minusMinutes(15);
+                LocalDateTime endDate = LocalDateTime.parse( usage.getSampleTime(), formatter);
                 for (Intervals interval : usage.getRegisterValues()) {
-                    /*new*/DIMD=null;PVSeeder=null;
-                    /*new*/PVSeeder= new preVEE();
-                    /*new*/DIMD= new D1InitialLoadIMD(PVSeeder);
-                    /*new*/DIMD.setServiceProviderExternalId(env.getProperty("hes.externalid"));
-                    /*new*/PVSeeder.setDvcIdN(usage.getDeviceId());
-
-                    count = 1;
+                    if(interval.getFormattedRegisterObisCode().equals("0.0.1.0.0.255"))//skip creating imd for datetime obis code
+                        continue;
+                    DIMD=null;PVSeeder=null;
+                    PVSeeder= new preVEE();
+                    DIMD= new D1InitialLoadIMD(PVSeeder);
+                    DIMD.setServiceProviderExternalId(env.getProperty("hes.externalid"));
+                    PVSeeder.setDvcIdN(usage.getDeviceId());
                     preVee = new preVEE();
+                    ml = new mL();
+                    ml.setS(1);
+                    formatedValues = interval.getFormattedValue().split("\\s");
+                    if(!formatedValues[0].matches("0") && formatedValues.length > 1 &&
+                            uomList.contains(formatedValues[1]) ) {
+                        double div = 1000.0;
+                        double ans= Double.valueOf(formatedValues[0])/div;
+                        if(subtractiveRegisterObisList.contains(interval.getFormattedRegisterObisCode()))
+                            ml.setR(String.format("%.4f",ans));
+                        else
+                            ml.setQ(String.format("%.4f",ans));
 
-
-                    if (interval.getFormattedRegisterObisCode().equals("0.0.1.0.0.255") && startDate == null) {
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH);
-                        startDate = LocalDateTime.parse(interval.getFormattedValue().substring(0,16), formatter);
-
-                        startDate = startDate.minusMinutes(15);
-
-                        //startDate.minusSeconds(startDate.getSecond())
-
-                        Usage lastUsage = sameDevices.get(sameDevices.size() - 1);
-                        Intervals sameObisCode = lastUsage.getRegisterValues().get(0);
-
-                        endDate = LocalDateTime.parse(sameObisCode.getFormattedValue().substring(0,16), formatter);
-                    } else {
-                        for (Usage same : sameDevices) {
-                            for (Intervals inter : same.getRegisterValues()) {
-                                ml = new mL();
-
-                                if (inter.getFormattedRegisterObisCode().equals(interval.getFormattedRegisterObisCode())) {
-                                    ml.setS(count);
-                                    formatedValues = inter.getFormattedValue().split("\\s");
-                                    if(!formatedValues[0].matches("0") && formatedValues.length > 1 &&
-                                            uomList.contains(formatedValues[1]) ) {
-                                        double div = 1000.0;
-                                        double ans= Double.valueOf(formatedValues[0])/div;
-                                        ml.setQ(String.format("%.4f",ans));
-
-                                    }else {
-                                        ml.setQ(inter.getFormattedValue().split("\\s")[0]);
-                                    }
-                                    //preVee.getMsrs().get(0).addML(ml);
-                                    /*new*/PVSeeder.getMsrs().get(0).addML(ml);
-                                    count++;
-                                    formatedValues = null;
-                                }
-                            }
-                        }
-
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss");
-                        /*new*/PVSeeder.setMcIdN(interval.getFormattedRegisterObisCode());
-                        //preVee.setMcIdN(interval.getFormattedRegisterObisCode());
-
-                        /*new*/PVSeeder.setStDt(startDate.toString().concat(":00"));
-                        //preVee.setStDt(startDate.format(formatter));
-
-                        /*new*/PVSeeder.setEnDt(endDate.toString().concat(":00"));
-                        //preVee.setEnDt(endDate.format(formatter));
-
-                        /*new*/PVSeeder.setSpi(env.getProperty("hes.spi"));
-                        //preVee.setSpi(env.getProperty("hes.spi"));
-
-
-
-
-                        /*new*/imds.getDIMD().add(DIMD);
+                    }else {
+                        if(subtractiveRegisterObisList.contains(interval.getFormattedRegisterObisCode()))
+                            ml.setR(interval.getFormattedValue().split("\\s")[0]);
+                        else
+                            ml.setQ(interval.getFormattedValue().split("\\s")[0]);
                     }
+                    PVSeeder.getMsrs().get(0).addML(ml);
 
+                    formatedValues = null;
 
+                    PVSeeder.setMcIdN(interval.getFormattedRegisterObisCode());
+                    PVSeeder.setStDt(startDate.toString()/*.concat(":00")*/);
+                    PVSeeder.setEnDt(endDate.toString()/*.concat(":00")*/);
+                    PVSeeder.setSpi(env.getProperty("hes.spi"));
+                    imds.getDIMD().add(DIMD);
                 }
 
-                devices.getDevices().add(device);
-                devicesIds.add(usage.getDeviceId());
 
-                //target2.usages.removeIf(i->i.getDeviceId().equals(usage.getDeviceId()));
 
             }
-
-
-           /* Removed 15 sept 2020
+            /* Removed 15 sept 2020
            JAXBContext context = JAXBContext.newInstance(Devices.class, Device.class, InitialMeasurementDataList.class,
                     preVEE.class, mL.class);
             Marshaller m = context.createMarshaller();

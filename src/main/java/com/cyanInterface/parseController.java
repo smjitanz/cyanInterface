@@ -1,9 +1,6 @@
 package com.cyanInterface;
 
-import com.cyanParser.model.MeterSampleRequestModel;
 import com.cyanParser.model.MeterSampleRequestModelParent;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
@@ -126,8 +123,8 @@ public class parseController {
 
                 StringBuffer jsonResponse = new StringBuffer(Objects.requireNonNull(response.getBody()));
                 jsonResponse.insert(0,"{usages:").append("}");
-               // CreateFile(fileName.toString());
-                // WriteToFile(fileName.toString(),jsonResponse);
+                CreateFile(fileName.toString());
+                 WriteToFile(fileName.toString(),jsonResponse);
                 //api call to our parsing service
                 jsonToXMLParser jsonToXmlParser = new jsonToXMLParser();
                 //jsonToXmlParser.parseMeasurementJson(jsonResponse,fileName,env);

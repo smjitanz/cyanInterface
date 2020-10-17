@@ -11,7 +11,19 @@ public class mL{
 	@XmlElement(name = "s")
 	private int s;
 	@XmlElement(name = "q")
-	private String q;
+	private String q=null;
+	@XmlElement(name = "r")
+	private String r=null;
+
+	public String getR() {
+		return r;
+	}
+
+	public void setR(String r) {
+		this.r = r;
+		this.q=null;
+	}
+
 
 	public mL() {
 	}
@@ -20,6 +32,7 @@ public class mL{
 		this.s = s;
 		this.q = q;
 	}
+
 // Getter Methods
 
 	public int getS() { return s; }
@@ -30,13 +43,13 @@ public class mL{
 	public void setS(int s) {
 		this.s = s;
 	}
-	public void setQ(String q) { this.q = q; }
+	public void setQ(String q) { this.q = q; this.r=null; }
 
 	@Override
 	public String toString() {
 		return "mL{" +
-				"s=" + s +
-				", q='" + q + '\'' +
+				"s=" + s + q!=null?
+				", q='" + q + '\'':", r='" + r + '\'' +
 				'}';
 	}
 }
