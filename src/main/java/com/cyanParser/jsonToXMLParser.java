@@ -340,8 +340,13 @@ public class jsonToXMLParser {
                     formatedValues = null;
 
                     PVSeeder.setMcIdN(interval.getFormattedRegisterObisCode());
-                    PVSeeder.setStDt(startDate.toString()/*.concat(":00")*/);
-                    PVSeeder.setEnDt(endDate.toString()/*.concat(":00")*/);
+                    if(startDate.toString().length()<18){
+                        PVSeeder.setStDt(startDate.toString().concat(":00"));
+                        PVSeeder.setEnDt(endDate.toString().concat(":00"));
+                    }else{
+                        PVSeeder.setStDt(startDate.toString()/*.concat(":00")*/);
+                        PVSeeder.setEnDt(endDate.toString()/*.concat(":00")*/);
+                    }
                     PVSeeder.setSpi(env.getProperty("hes.spi"));
                     imds.getDIMD().add(DIMD);
                 }

@@ -3,13 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="66091113-51e2-4c7b-8c33-300a67a63aa2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cyanInterface-master.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/cyanInterface-master.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cyanInterface/parseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cyanInterface/parseController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/cyanParser/jsonToXMLParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cyanParser/jsonToXMLParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cyanParser/model/ListUsage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cyanParser/model/ListUsage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cyanParser/model/Usage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cyanParser/model/Usage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cyanParser/model/mL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cyanParser/model/mL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
