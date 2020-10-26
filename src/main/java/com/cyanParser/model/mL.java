@@ -15,6 +15,9 @@ public class mL{
 	@XmlElement(name = "r")
 	private String r=null;
 
+	@XmlElement(name = "fc")
+	private String fc=null;
+
 	public String getR() {
 		return r;
 	}
@@ -22,6 +25,15 @@ public class mL{
 	public void setR(String r) {
 		this.r = r;
 		this.q=null;
+	}
+
+
+	public String getFc() {
+		return fc;
+	}
+
+	public void setFc(String fc) {
+		this.fc = fc;
 	}
 
 
@@ -50,6 +62,7 @@ public class mL{
 		return "mL{" +
 				"s=" + s + q!=null?
 				", q='" + q + '\'':", r='" + r + '\'' +
+				",fc='"+fc+'\''+
 				'}';
 	}
 }

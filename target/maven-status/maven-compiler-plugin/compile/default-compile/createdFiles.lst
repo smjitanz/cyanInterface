@@ -2,6 +2,7 @@ com\cyanParser\model\mL.class
 com\cyanParser\model\preVEE.class
 com\cyanParser\model\Usage.class
 com\cyanParser\model\Alarms.class
+com\cyanParser\model\MeterSampleDeviceRequestModelParent.class
 com\cyanParser\model\Usage$1.class
 com\cyanParser\model\ListEvent.class
 com\cyanParser\model\SGGIMDsEvents.class
@@ -14,6 +15,7 @@ com\cyanParser\model\InitialMeasurementDataList.class
 com\cyanParser\model\ListAlarm.class
 com\cyanParser\model\Device.class
 com\cyanParser\model\initialMeasurementData.class
+com\cyanParser\model\MeterSampleDeviceRequestModel.class
 com\cyanParser\jsonToXMLParser.class
 com\cyanParser\model\Event.class
 com\cyanParser\model\Usage$2.class

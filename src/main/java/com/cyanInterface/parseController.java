@@ -1,5 +1,6 @@
 package com.cyanInterface;
 
+import com.cyanParser.model.MeterSampleDeviceRequestModelParent;
 import com.cyanParser.model.MeterSampleRequestModelParent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -82,6 +83,74 @@ public class parseController {
         }
     }
 */
+
+    @PostMapping("/meterSamplesV3")
+    public String meterSamplesV3(@RequestBody MeterSampleDeviceRequestModelParent requests)
+    {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = env.getProperty("metersample.url");
+
+            // create headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+            // add basic authentication {will add encryption here or take this as parameter when running the code}
+            headers.setBasicAuth("mdm", "6yJLpWIi7qi8Mc7x");
+
+
+            // request body parameters
+
+            long count=Long.parseLong(requests.getRequest().getCount());
+            long startId=Long.parseLong(requests.getRequest().getStartId());;
+
+            long check=1;
+            while(check > 0) {
+                Map<String, Object> map = new HashMap<>();
+                System.out.println("startID-DVCREQ:"+String.valueOf(startId));
+                System.out.println("count-DVCREQ:"+String.valueOf(count));
+                map.put("startId", String.valueOf(startId));
+                map.put("count", String.valueOf(count));
+
+                // build the request
+                HttpEntity<Map<String, Object>> requestBody = new HttpEntity<>(map, headers);
+
+
+                // send POST request
+                assert url != null;
+                ResponseEntity<String> response = restTemplate.postForEntity(url, requestBody, String.class);
+
+                // check response
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    String filePath = env.getProperty("file.path");
+
+                    StringBuilder fileName = new StringBuilder(
+                            filePath.concat("scheduledRead" + DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(LocalDateTime.now()).toString() + ".json"));
+
+                    StringBuffer jsonResponse = new StringBuffer(Objects.requireNonNull(response.getBody()));
+                    jsonResponse.insert(0, "{usages:").append("}");
+                     CreateFile(fileName.toString());
+                     WriteToFile(fileName.toString(), jsonResponse);
+                    //api call to our parsing service
+                    jsonToXMLParser jsonToXmlParser = new jsonToXMLParser();
+                    //jsonToXmlParser.parseMeasurementJson(jsonResponse,fileName,env);
+                    jsonToXmlParser.parseMeasurementJsonV3(jsonResponse, fileName, env,requests.getRequest().getDevice());
+                    String usageCount = jsonToXmlParser.GetUsagesCount(jsonResponse);
+                    startId = startId + count + 1;
+                    check=Long.parseLong(usageCount);
+                    //return response.getBody();
+                    // return usageCount;
+                }
+            }
+            return String.valueOf(startId);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return "ERROR:"+ex.toString();
+        }
+    }
     @PostMapping("/meterSamplesV2")
     public String meterSamplesV2(@RequestBody MeterSampleRequestModelParent requests)
     {

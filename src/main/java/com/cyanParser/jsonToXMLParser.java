@@ -22,6 +22,9 @@ public class jsonToXMLParser {
     List<String> uomList =  Arrays.asList("W","varh","var","Wh");
     List<String> profileObisList = Arrays.asList("1.0.99.3.0.255","1.0.99.1.0.255");
     List<String> subtractiveRegisterObisList = Arrays.asList("1.0.1.8.0.255","1.0.2.8.0.255");
+    String ValidObisCodes = "1.0.1.8.0.255,1.0.1.4.0.255,1.0.3.4.0.255,1.0.1.8.1.255,1.0.29.7.0.255,"
+        +"1.0.51.7.0.255,1.0.73.7.0.255,1.0.30.7.0.255,1.0.52.7.0.255,1.0.32.7.0.255,1.0.49.7.0.255,"
+        +"1.0.53.7.0.255,1.0.72.7.0.255,1.0.69.7.0.255,1.0.70.7.0.255,1.0.31.7.0.255,1.0.50.7.0.255,1.0.1.8.2.255,1.0.33.7.0.255,1.0.71.7.0.255";
 
     String[] formatedValues=null;
     public jsonToXMLParser() {
@@ -293,6 +296,8 @@ public class jsonToXMLParser {
             subtractiveRegisterObisList = Arrays.asList(env.getProperty("hes.subtractiveRegisterObisList").split(","));
             profileObisList = Arrays.asList(env.getProperty("hes.profileObisList").split(","));
             uomList = Arrays.asList(env.getProperty("hes.uomList").split(","));
+            ValidObisCodes = env.getProperty("hes.ValidObisCodes");
+
 
             SGGIMDsEvents imds = new SGGIMDsEvents();
             D1InitialLoadIMD DIMD;
@@ -302,15 +307,20 @@ public class jsonToXMLParser {
 
             DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;//DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
             target2.usages.removeIf(x-> !(profileObisList.contains(x.getFormattedProfileObisCode())));
-            List<String> devices= target2.usages.stream().map(x->x.getDeviceId()).collect(Collectors.toList());
+            //List<String> devices= target2.usages.stream().map(x->x.getDeviceId()).collect(Collectors.toList());
             for(Usage usage : target2.usages)
             {
                 LocalDateTime startDate = LocalDateTime.parse( usage.getSampleTime(), formatter);
                 startDate=  startDate.minusMinutes(15);
                 LocalDateTime endDate = LocalDateTime.parse( usage.getSampleTime(), formatter);
                 for (Intervals interval : usage.getRegisterValues()) {
-                    if(interval.getFormattedRegisterObisCode().equals("0.0.1.0.0.255"))//skip creating imd for datetime obis code
+                    if(interval.getFormattedRegisterObisCode().equals("0.0.1.0.0.255") ||
+                            !ValidObisCodes.contains(interval.getFormattedRegisterObisCode()))//skip creating imd for datetime and other useless obis code
+                    {
+                        //System.out.println("Skipping:"+interval.getFormattedRegisterObisCode());
                         continue;
+
+                    }
                     DIMD=null;PVSeeder=null;
                     PVSeeder= new preVEE();
                     DIMD= new D1InitialLoadIMD(PVSeeder);
@@ -319,6 +329,7 @@ public class jsonToXMLParser {
                     preVee = new preVEE();
                     ml = new mL();
                     ml.setS(1);
+                    ml.setFc("501000");
                     formatedValues = interval.getFormattedValue().split("\\s");
                     if(!formatedValues[0].matches("0") && formatedValues.length > 1 &&
                             uomList.contains(formatedValues[1]) ) {
@@ -331,9 +342,9 @@ public class jsonToXMLParser {
 
                     }else {
                         if(subtractiveRegisterObisList.contains(interval.getFormattedRegisterObisCode()))
-                            ml.setR(interval.getFormattedValue().split("\\s")[0]);
+                            ml.setR(String.format("%.4f",Double.valueOf(interval.getFormattedValue().split("\\s")[0])));
                         else
-                            ml.setQ(interval.getFormattedValue().split("\\s")[0]);
+                            ml.setQ(String.format("%.4f",Double.valueOf(interval.getFormattedValue().split("\\s")[0])));
                     }
                     PVSeeder.getMsrs().get(0).addML(ml);
 
@@ -365,11 +376,112 @@ public class jsonToXMLParser {
             */
             JAXBContext context = JAXBContext.newInstance(SGGIMDsEvents.class, D1InitialLoadIMD.class,preVEE.class,mL.class);
             Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
             OutputStream outputfile = new FileOutputStream(fileName.replace(fileName.length() - 4, fileName.length(), "xml").toString());
             m.marshal(imds, outputfile);
+
             outputfile.close();
 
+            //target2.usages.forEach(usage -> usage.registerValues.forEach(interval -> System.out.println(interval.getAttributeId())));
+        } catch (JAXBException je) {
+            je.printStackTrace();
+        } catch (NullPointerException ne) {
+            ne.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    //code for parsing Measurements json
+    public void parseMeasurementJsonV3(@org.jetbrains.annotations.NotNull StringBuffer jsonBody, StringBuilder fileName, Environment env,String Device) {
+
+        try {
+            Gson gson = new Gson(); // Or use new GsonBuilder().create();
+            ListUsage target2 = gson.fromJson(jsonBody.toString(), ListUsage.class);
+            //Collections.sort(target2.usages, Usage.sampleDateTime);
+            subtractiveRegisterObisList = Arrays.asList(env.getProperty("hes.subtractiveRegisterObisList").split(","));
+            profileObisList = Arrays.asList(env.getProperty("hes.profileObisList").split(","));
+            ValidObisCodes = env.getProperty("hes.ValidObisCodes");
+            uomList = Arrays.asList(env.getProperty("hes.uomList").split(","));
+
+            SGGIMDsEvents imds = new SGGIMDsEvents();
+            D1InitialLoadIMD DIMD;
+            preVEE PVSeeder;
+            mL ml;
+            preVEE preVee;
+
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;//DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
+            target2.usages.removeIf(x-> !(profileObisList.contains(x.getFormattedProfileObisCode())));
+           for(Usage usage : target2.usages)
+            {
+                if(!usage.getDeviceId().equals(Device))
+                    continue;
+                LocalDateTime startDate = LocalDateTime.parse( usage.getSampleTime(), formatter);
+                startDate=  startDate.minusMinutes(15);
+                LocalDateTime endDate = LocalDateTime.parse( usage.getSampleTime(), formatter);
+                for (Intervals interval : usage.getRegisterValues()) {
+                    if(interval.getFormattedRegisterObisCode().equals("0.0.1.0.0.255") ||
+                            !ValidObisCodes.contains(interval.getFormattedRegisterObisCode()))//skip creating imd for datetime and other useless obis code
+                    {
+                        System.out.println("Skipping:"+interval.getFormattedRegisterObisCode());
+                        continue;
+
+                    }
+                    DIMD=null;PVSeeder=null;
+                    PVSeeder= new preVEE();
+                    DIMD= new D1InitialLoadIMD(PVSeeder);
+                    DIMD.setServiceProviderExternalId(env.getProperty("hes.externalid"));
+                    PVSeeder.setDvcIdN(usage.getDeviceId());
+                    preVee = new preVEE();
+                    ml = new mL();
+                    ml.setS(1);
+                    ml.setFc("501000");
+                    formatedValues = interval.getFormattedValue().split("\\s");
+                    if(!formatedValues[0].matches("0") && formatedValues.length > 1 &&
+                            uomList.contains(formatedValues[1]) ) {
+                        double div = 1000.0;
+                        double ans= Double.valueOf(formatedValues[0])/div;
+                        if(subtractiveRegisterObisList.contains(interval.getFormattedRegisterObisCode()))
+                            ml.setR(String.format("%.4f",ans));
+                        else
+                            ml.setQ(String.format("%.4f",ans));
+
+                    }else {
+                        if(subtractiveRegisterObisList.contains(interval.getFormattedRegisterObisCode()))
+                            ml.setR(String.format("%.4f",Double.valueOf(interval.getFormattedValue().split("\\s")[0])));
+                        else
+                            ml.setQ(String.format("%.4f",Double.valueOf(interval.getFormattedValue().split("\\s")[0])));
+                    }
+                    PVSeeder.getMsrs().get(0).addML(ml);
+
+                    formatedValues = null;
+
+                    PVSeeder.setMcIdN(interval.getFormattedRegisterObisCode());
+                    if(startDate.toString().length()<18){
+                        PVSeeder.setStDt(startDate.toString().concat(":00"));
+                        PVSeeder.setEnDt(endDate.toString().concat(":00"));
+                    }else{
+                        PVSeeder.setStDt(startDate.toString()/*.concat(":00")*/);
+                        PVSeeder.setEnDt(endDate.toString()/*.concat(":00")*/);
+                    }
+                    PVSeeder.setSpi(env.getProperty("hes.spi"));
+                    imds.getDIMD().add(DIMD);
+                }
+
+
+
+            }
+
+
+            if(imds.getDIMD().size() > 0) {
+                JAXBContext context = JAXBContext.newInstance(SGGIMDsEvents.class, D1InitialLoadIMD.class, preVEE.class, mL.class);
+                Marshaller m = context.createMarshaller();
+                m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+                OutputStream outputfile = new FileOutputStream(fileName.replace(fileName.length() - 4, fileName.length(), "xml").toString());
+                m.marshal(imds, outputfile);
+                outputfile.close();
+            }
             //target2.usages.forEach(usage -> usage.registerValues.forEach(interval -> System.out.println(interval.getAttributeId())));
         } catch (JAXBException je) {
             je.printStackTrace();
